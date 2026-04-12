@@ -5,21 +5,37 @@
       "titre": "Application de gestion des étudiants",
       "description": "Application web complète avec gestion des utilisateurs et base de données SQL Server.",
       "image": "./assets/images/etudiant-app.png",
-      "technologies": ["HTML", "CSS", "JavaScript", "SQL Server"]
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "SQL Server"
+      ]
     },
     {
       "id": "2",
       "titre": "Déploiement AWS EC2",
       "description": "Mise en place d'un serveur web Apache sur instance EC2.",
       "image": "./assets/images/aws-ec2.png",
-      "technologies": ["AWS", "EC2", "Apache", "Linux"]
+      "technologies": [
+        "AWS",
+        "EC2",
+        "Apache",
+        "Linux"
+      ]
     },
     {
       "id": "3",
       "titre": "CI/CD avec GitHub Actions",
       "description": "Automatisation complète du déploiement avec pipeline CI/CD.",
       "image": "./assets/images/github-actions.png",
-      "technologies": ["GitHub Actions", "AWS", "Docker", "DevOps"]
+      "technologies": [
+        "GitHub Actions",
+        "AWS",
+        "Docker",
+        "DevOps"
+      ]
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

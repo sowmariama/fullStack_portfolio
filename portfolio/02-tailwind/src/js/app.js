@@ -34,7 +34,7 @@ async function afficherProjets() {
                                class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
                                 Voir le détail <i class="fas fa-arrow-right"></i>
                             </a>
-                            <button onclick="supprimerProjet(${projet.id})"
+                            <button onclick="supprimerProjet('${projet.id}')"
                                     class="bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-xl text-sm font-medium transition">
                                 <i class="fas fa-trash"></i> Supprimer
                             </button>
@@ -89,7 +89,7 @@ async function afficherDetail() {
                    class="flex-1 bg-white border border-slate-300 text-slate-700 py-4 rounded-2xl text-center font-medium hover:bg-slate-50">
                     ← Retour à la liste
                 </a>
-                <button onclick="supprimerProjet(${projet.id})"
+                <button onclick="supprimerProjet('${projet.id}')"
                         class="flex-1 bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl font-medium">
                     <i class="fas fa-trash"></i> Supprimer ce projet
                 </button>
@@ -105,6 +105,7 @@ async function afficherDetail() {
 // =============================================
 async function ajouterProjet(titre, description, imageBase64, technologies) {
     const nouveauProjet = {
+        id: String(Date.now()),
         titre: titre,
         description: description,
         image: imageBase64 || "https://placehold.co/400x200/1e40af/white?text=Projet",
@@ -118,7 +119,7 @@ async function ajouterProjet(titre, description, imageBase64, technologies) {
     });
 
     const projetCree = await response.json();
-    console.log(" Projet ajouté :", projetCree.titre);
+    console.log(" Projet ajouté avec ID :", projetCree.id);
     return projetCree;
 }
 
@@ -129,7 +130,13 @@ async function supprimerProjet(id) {
     if (!confirm("Voulez-vous vraiment supprimer ce projet ?")) return;
 
     try {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+        if (!response.ok) {
+            alert(" Erreur lors de la suppression !");
+            return;
+        }
+
         console.log(" Projet supprimé, id :", id);
 
         if (document.getElementById("detail-container")) {
