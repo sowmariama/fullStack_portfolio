@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI/CD avec GitHub Actions - Mairam Baidy Sow</title>
+    <title>Détail projet - Mairam Baidy Sow</title>
     <link href="./dist/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-slate-50">
 
-    <!-- NAVBAR simple (identique à lister-projets.html) -->
     <nav class="bg-gray-900 border-b-4 border-blue-600 py-5">
         <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
             <a href="lister-projets.html" class="text-2xl font-bold text-white">MBS</a>
-            
             <div class="flex gap-8 text-white">
                 <a href="lister-projets.html" class="hover:text-blue-400">Projets</a>
-                <a href="#" class="hover:text-blue-400">Compétences</a>
             </div>
-            
             <a href="ajouter-projet.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-2xl text-white text-sm font-medium">
                 + Ajouter un projet
             </a>
@@ -26,68 +22,18 @@
     </nav>
 
     <div class="max-w-4xl mx-auto px-6 py-12">
-
-        <!-- Bouton Retour -->
         <a href="lister-projets.html" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-8">
             <i class="fas fa-arrow-left"></i> Retour à la liste des projets
         </a>
-
-        <!-- Titre -->
-        <h1 class="text-4xl font-bold text-slate-800 mb-2">CI/CD avec GitHub Actions</h1>
-        <p class="text-blue-600 font-medium">Mairam Baidy Sow - Groupe 1 AWS re/Start</p>
-
-        <!-- Image principale -->
-        <div class="mt-8 rounded-3xl overflow-hidden shadow-xl">
-            <img src="./assets/images/github-actions.png" 
-                 alt="CI/CD Pipeline"
-                 class="w-full">
-        </div>
-
-        <!-- Description -->
-        <div class="mt-10 prose prose-slate max-w-none">
-            <p class="text-lg text-slate-700">
-                Mise en place d’un pipeline d’intégration et déploiement continu (CI/CD) 
-                automatisé avec GitHub Actions.
-            </p>
-            
-            <h2 class="text-2xl font-semibold text-slate-800 mt-10 mb-4">Objectif du projet</h2>
-            <p>Automatiser entièrement le cycle de vie d’une application : tests, build et déploiement sur une instance AWS EC2 à chaque push sur la branche main.</p>
-
-            <h2 class="text-2xl font-semibold text-slate-800 mt-10 mb-4">Technologies utilisées</h2>
-            <ul class="list-disc pl-6 space-y-2 text-slate-700">
-                <li>GitHub Actions (Workflows YAML)</li>
-                <li>AWS EC2 + SSH</li>
-                <li>Node.js / Python</li>
-                <li>Docker (optionnel)</li>
-                <li>Tests automatisés</li>
-            </ul>
-
-            <h2 class="text-2xl font-semibold text-slate-800 mt-10 mb-4">Ce que j’ai appris</h2>
-            <p class="text-slate-700">
-                Bonne pratique DevOps, automatisation complète, réduction des erreurs humaines 
-                et gain de temps énorme sur le déploiement.
-            </p>
-        </div>
-
-        <!-- Boutons d’action -->
-        <div class="mt-12 flex gap-4">
-            <a href="lister-projets.html" 
-               class="flex-1 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 py-4 rounded-2xl text-center font-medium">
-                ← Retour
-            </a>
-            <a href="ajouter-projet.html" 
-               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl text-center font-medium">
-                Ajouter un projet similaire
-            </a>
-        </div>
+        <div id="detail-container"></div>
     </div>
 
-    <!-- Footer simple -->
     <footer class="bg-gray-900 text-white py-10 mt-16">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <p class="text-slate-400">© 2026 Mairam Baidy Sow - Groupe 1 AWS re/Start</p>
         </div>
     </footer>
 
+    <script src="./src/js/app.js"></script>
 </body>
 </html>
