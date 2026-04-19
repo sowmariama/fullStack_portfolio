@@ -46,6 +46,17 @@
         "tailwind",
         "javasscript etc"
       ]
+    },
+    {
+      "id": "8DWJntbPqRc",
+      "titre": "app mobile",
+      "description": "vente en ligne d'habits",
+      "image": "images/projet1.PNG",
+      "technologies": [
+        "React",
+        "tailwind",
+        "javasscript etc"
+      ]
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
