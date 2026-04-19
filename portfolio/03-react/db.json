@@ -1,0 +1,25 @@
+{
+  "projets": [
+    {
+      "id": "1",
+      "titre": "Application de gestion des étudiants",
+      "description": "Application web complète avec gestion des utilisateurs et base de données SQL Server.",
+      "image": "https://placehold.co/400x200/1e40af/white?text=Etudiants",
+      "technologies": ["HTML", "CSS", "JavaScript", "SQL Server"]
+    },
+    {
+      "id": "2",
+      "titre": "Déploiement AWS EC2",
+      "description": "Mise en place d'un serveur web Apache sur instance EC2.",
+      "image": "https://placehold.co/400x200/1e40af/white?text=AWS+EC2",
+      "technologies": ["AWS", "EC2", "Apache", "Linux"]
+    },
+    {
+      "id": "3",
+      "titre": "CI/CD avec GitHub Actions",
+      "description": "Automatisation complète du déploiement avec pipeline CI/CD.",
+      "image": "https://placehold.co/400x200/1e40af/white?text=CI/CD",
+      "technologies": ["GitHub Actions", "AWS", "Docker", "DevOps"]
+    }
+  ]
+}
