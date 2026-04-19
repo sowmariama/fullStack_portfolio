@@ -17,12 +17,9 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen flex flex-col bg-slate-50">
-        
-        {/* Navbar apparaît sur TOUTES les pages — c'est la magie React ! */}
         <Navbar />
-
-        {/* Le contenu change selon l'URL */}
-        <main className="flex-1">
+        {/* pt-20 compense la navbar fixed pour que le contenu ne se cache pas dessous */}
+        <main className="flex-1 pt-20">
           <Routes>
             <Route path="/" element={<ListeProjets />} />
             <Route path="/projet/:id" element={<DetailProjet />} />
@@ -31,10 +28,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
-
-        {/* Footer apparaît sur TOUTES les pages */}
         <Footer />
-
       </div>
     </BrowserRouter>
   );
