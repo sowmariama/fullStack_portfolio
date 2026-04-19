@@ -1,6 +1,6 @@
-// Hero.jsx – Version vivante avec photo + animation
+// Hero.jsx – avec mention sécurité / crypto
 import { Link } from 'react-router-dom';
-import maPhoto from '../assets/moi.jpg'; // ← adapte le chemin et le nom
+import maPhoto from '../assets/moi.jpg';
 
 function Hero() {
   return (
@@ -9,7 +9,7 @@ function Hero() {
         
         <div className="flex flex-col md:flex-row items-center gap-12">
           
-          {/* Photo – cercle avec effet lumineux */}
+          {/* Photo */}
           <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-amber-500 shadow-xl shadow-amber-500/20 animate-pulse-slow">
             <img 
               src={maPhoto} 
@@ -28,7 +28,9 @@ function Hero() {
             </p>
             <p className="text-slate-300 max-w-2xl mx-auto md:mx-0 mb-8">
               Je crée des applications web modernes et des solutions cloud innovantes. 
-              Passionné par React, Node.js, AWS et le design élégant.
+              Passionné par <span className="text-amber-300">React, Node.js, AWS</span>, 
+              mais aussi par la <span className="text-amber-300">sécurité informatique</span> 
+              et l’univers <span className="text-amber-300">crypto</span> (blockchain, Web3).
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <a 
