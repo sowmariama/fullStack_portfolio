@@ -13,7 +13,6 @@
       ]
     },
     {
-      "id": "2",
       "titre": "Déploiement AWS EC2",
       "description": "Mise en place d'un serveur web Apache sur instance EC2.",
       "image": "https://placehold.co/400x200/1e40af/white?text=AWS+EC2",
@@ -21,8 +20,9 @@
         "AWS",
         "EC2",
         "Apache",
-        "Linux"
-      ]
+        "Linux ...etc"
+      ],
+      "id": "2"
     },
     {
       "id": "3",
