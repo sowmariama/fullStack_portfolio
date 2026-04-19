@@ -1,4 +1,4 @@
-// DetailProjet.jsx – Version design premium
+// DetailProjet.jsx – Version finale avec accent amber
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getProjet, supprimerProjet } from '../services/projetService';
@@ -36,7 +36,7 @@ function DetailProjet() {
 
   if (loading) return (
     <div className="text-center py-20">
-      <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p className="text-slate-500 mt-4">Chargement du projet...</p>
     </div>
   );
@@ -44,7 +44,7 @@ function DetailProjet() {
   if (!projet) return (
     <div className="text-center py-20">
       <p className="text-red-500 text-xl">Projet introuvable.</p>
-      <Link to="/" className="text-blue-600 hover:underline mt-4 inline-block">
+      <Link to="/" className="text-amber-600 hover:underline mt-4 inline-block">
         ← Retour à la liste
       </Link>
     </div>
@@ -55,14 +55,13 @@ function DetailProjet() {
       
       {/* Fil d'Ariane (breadcrumb) */}
       <nav className="text-sm text-slate-500 mb-6">
-        <Link to="/" className="hover:text-blue-600">Accueil</Link>
+        <Link to="/" className="hover:text-amber-600 transition">Accueil</Link>
         <span className="mx-2">/</span>
         <span className="text-slate-800 font-medium">{projet.titre}</span>
       </nav>
 
-      {/* En-tête avec image et titre côte à côte sur desktop */}
+      {/* En-tête avec image et titre côte à côte */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Image */}
         <div className="rounded-2xl overflow-hidden shadow-lg bg-slate-100">
           <img 
             src={projet.image} 
@@ -71,14 +70,12 @@ function DetailProjet() {
             className="w-full h-64 lg:h-full object-cover"
           />
         </div>
-
-        {/* Infos principales */}
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-3">
             {projet.titre}
           </h1>
           <div className="flex items-center gap-3 text-sm text-slate-500 mb-6">
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Projet</span>
+            <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">Projet</span>
             <span>•</span>
             <span>Mairam Baidy Sow</span>
           </div>
@@ -91,14 +88,14 @@ function DetailProjet() {
       {/* Section Technologies */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <span className="w-8 h-0.5 bg-blue-600 rounded-full"></span>
+          <span className="w-8 h-0.5 bg-amber-500 rounded-full"></span>
           Technologies utilisées
         </h2>
         <div className="flex flex-wrap gap-3">
           {projet.technologies.map((tech, index) => (
             <span 
               key={index}
-              className="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-50 hover:text-blue-600 transition"
+              className="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-amber-50 hover:text-amber-600 transition duration-200"
             >
               {tech}
             </span>
@@ -106,7 +103,7 @@ function DetailProjet() {
         </div>
       </div>
 
-      {/* Boutons d'action – sans icônes */}
+      {/* Boutons d'action */}
       <div className="flex flex-col sm:flex-row gap-4 border-t border-slate-200 pt-10">
         <Link 
           to="/"
