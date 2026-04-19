@@ -7,13 +7,22 @@ function Footer() {
             © 2026 Mairam Baidy Sow - Groupe 1 AWS re/Start
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-slate-400 hover:text-blue-400 transition">GitHub</a>
-            <a href="#" className="text-slate-400 hover:text-blue-400 transition">LinkedIn</a>
-            <a href="#" className="text-slate-400 hover:text-blue-400 transition">Twitter</a>
+            <a href="https://github.com/sowmariama/fullStack_portfolio" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               className="text-slate-400 hover:text-blue-400 transition">
+              GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/mairam-baidy-sow-94918025a" 
+               target="_blank"
+               rel="noopener noreferrer"
+               className="text-slate-400 hover:text-blue-400 transition">
+              LinkedIn
+            </a>
           </div>
         </div>
         <p className="text-slate-500 text-xs text-center mt-4">
-          Portfolio full-stack — React • Express • MongoDB
+          Portfolio full-stack — React • Tailwind • Express • MongoDB
         </p>
       </div>
     </footer>
