@@ -1,3 +1,4 @@
+// ModifierProjet.jsx – Version finale avec accent amber
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getProjet, modifierProjet } from '../services/projetService';
@@ -80,7 +81,7 @@ function ModifierProjet() {
 
   if (chargement) return (
     <div className="text-center py-20">
-      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <p className="text-slate-500 mt-4">Chargement du projet...</p>
     </div>
   );
@@ -88,19 +89,21 @@ function ModifierProjet() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
+      {/* Fil d'Ariane avec accent */}
       <nav className="text-sm text-slate-500 mb-6">
-        <Link to="/" className="hover:text-blue-600">Accueil</Link>
+        <Link to="/" className="hover:text-amber-600 transition">Accueil</Link>
         <span className="mx-2">/</span>
-        <Link to={`/projet/${id}`} className="hover:text-blue-600">Détail</Link>
+        <Link to={`/projet/${id}`} className="hover:text-amber-600 transition">Détail</Link>
         <span className="mx-2">/</span>
         <span className="text-slate-800 font-medium">Modifier</span>
       </nav>
 
+      {/* En-tête */}
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 tracking-tight">
           Modifier le projet
         </h1>
-        <div className="w-20 h-1 bg-blue-600 rounded-full mt-2"></div>
+        <div className="w-20 h-1 bg-amber-500 rounded-full mt-2"></div>
         <p className="text-slate-500 mt-4">
           Modifiez les informations de votre projet ci-dessous.
         </p>
@@ -120,7 +123,7 @@ function ModifierProjet() {
               name="titre"
               value={form.titre}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 transition ${
                 errors.titre ? 'border-red-500 bg-red-50' : 'border-slate-300'
               }`}
             />
@@ -137,7 +140,7 @@ function ModifierProjet() {
               value={form.description}
               onChange={handleChange}
               rows="4"
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 transition ${
                 errors.description ? 'border-red-500 bg-red-50' : 'border-slate-300'
               }`}
             />
@@ -155,7 +158,7 @@ function ModifierProjet() {
               value={form.image}
               onChange={handleChange}
               placeholder="https://exemple.com/image.jpg ou /images/photo.jpg"
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
             />
             <p className="text-xs text-slate-400 mt-1">
               Mettez votre image dans public/images/ et écrivez /images/nom.jpg
@@ -183,7 +186,7 @@ function ModifierProjet() {
               value={form.technologies}
               onChange={handleChange}
               placeholder="React, Tailwind CSS, Node.js..."
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
             />
             {form.technologies && (
               <div className="flex flex-wrap gap-2 mt-3">
@@ -192,7 +195,7 @@ function ModifierProjet() {
                   if (!cleanTech) return null;
                   return (
                     <span key={idx}
-                          className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full">
+                          className="bg-amber-50 text-amber-700 text-xs px-3 py-1 rounded-full font-medium border border-amber-200">
                       {cleanTech}
                     </span>
                   );
@@ -212,7 +215,8 @@ function ModifierProjet() {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition disabled:opacity-60">
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition disabled:opacity-60 shadow-md hover:shadow-lg"
+          >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
