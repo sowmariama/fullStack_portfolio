@@ -4,7 +4,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/projets';
+const API_URL = 'http://localhost:5000/api/projets';
 
 // Récupérer tous les projets
 export const getProjets = () => axios.get(API_URL);
