@@ -1,4 +1,3 @@
-// app.js - Point d'entrée de l'API
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,9 +8,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
+// Middlewares — limite augmentée à 10mb pour les images
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Import des routes
 const projetRoutes = require('./routes/projetRoutes');
