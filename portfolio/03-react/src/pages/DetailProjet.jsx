@@ -53,14 +53,12 @@ function DetailProjet() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       
-      {/* Fil d'Ariane (breadcrumb) */}
       <nav className="text-sm text-slate-500 mb-6">
         <Link to="/" className="hover:text-amber-600 transition">Accueil</Link>
         <span className="mx-2">/</span>
         <span className="text-slate-800 font-medium">{projet.titre}</span>
       </nav>
 
-      {/* En-tête avec image et titre côte à côte */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         <div className="rounded-2xl overflow-hidden shadow-lg bg-slate-100">
           <img 
@@ -85,7 +83,6 @@ function DetailProjet() {
         </div>
       </div>
 
-      {/* Section Technologies */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
           <span className="w-8 h-0.5 bg-amber-500 rounded-full"></span>
@@ -103,7 +100,6 @@ function DetailProjet() {
         </div>
       </div>
 
-      {/* Boutons d'action */}
       <div className="flex flex-col sm:flex-row gap-4 border-t border-slate-200 pt-10">
         <Link 
           to="/"
@@ -112,7 +108,7 @@ function DetailProjet() {
           Retour à la liste
         </Link>
         <Link 
-          to={`/modifier/${projet.id}`}
+          to={`/modifier/${projet._id}`}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-center font-medium transition shadow-md hover:shadow-lg"
         >
           Modifier le projet
