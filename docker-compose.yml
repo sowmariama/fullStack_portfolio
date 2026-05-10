@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+#Backend Express
+  backend:
+    build: ./portfolio/04-express-mongodb
+    container_name: portfolio-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - PORT=5000
+    restart: unless-stooped
+
+# Frontend React 
+  frontend:
+   build: ./portfolio/03-react
+   container_name: portfolio-frontend
+   ports:
+    - "5173:80"
+   depends_on:
+    - backend
+   restart: unless-stopped
