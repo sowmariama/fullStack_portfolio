@@ -1,10 +1,14 @@
-FROM node:20 AS builder 
+FROM node:20-alpine AS builder 
 
 WORKDIR /app
 
 COPY package*.json ./ 
 
-RUN npm install 
+# Nettoyer le cache npm pour éviter les problèmes
+RUN npm cache clean --force
+
+# Installer les dépendances
+RUN npm install --prefer-offline
 
 COPY . . 
 

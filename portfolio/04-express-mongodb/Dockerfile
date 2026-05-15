@@ -1,10 +1,12 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+# Nettoyer le cache et installer
+RUN npm cache clean --force && \
+    npm install --prefer-offline
 
 COPY . .
 
