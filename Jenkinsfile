@@ -52,12 +52,15 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh '''
-                    # Arrêter les anciens conteneurs si ils existent
-                    docker compose -f ./docker-compose.yml down || true
+                sh ''' 
+        # Aller dans le dossier contenant docker-compose.yml
+            
+                  cd ./portfolio
+        # Arrêter les anciens conteneurs si ils existent
+                   docker-compose down || true
                     
-                    # Lancer les nouveaux conteneurs
-                    docker compose -f ./docker-compose.yml up -d
+                   # Lancer les nouveaux conteneurs
+                   docker-compose up -d
                 '''
             }
         }
