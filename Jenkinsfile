@@ -54,10 +54,10 @@ pipeline {
             steps {
                 sh '''
                     # Arrêter les anciens conteneurs si ils existent
-                    docker compose -f ./portfolio/docker-compose.yml down || true
+                    docker compose -f ./docker-compose.yml down || true
                     
                     # Lancer les nouveaux conteneurs
-                    docker compose -f ./portfolio/docker-compose.yml up -d
+                    docker compose -f ./docker-compose.yml up -d
                 '''
             }
         }
