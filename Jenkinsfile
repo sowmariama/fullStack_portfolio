@@ -51,35 +51,31 @@ pipeline {
         success {
             emailext (
                 to: 'mairosow91@gmail.com',
-                subject: "Build reussi: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: """
-                    Pipeline execute avec succes.
-                    Projet: ${env.JOB_NAME}
-                    Build: ${env.BUILD_NUMBER}
-                    Status: SUCCES
-                    Details: ${env.BUILD_URL}
-                    Images Docker Hub:
-                    - sowmariama/portfolio-backend:v1
-                    - sowmariama/portfolio-frontend:v1
-                    Application accessible sur http://localhost:5173
-                """
+                subject: "SUCCÈS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                mimeType: 'text/html',
+                body: '''
+                    <h2>Pipeline Jenkins Réussi</h2>
+                    <p><b>Job:</b> ${env.JOB_NAME}</p>
+                    <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Statut:</b> <span style="color:green">SUCCÈS</span></p>
+                    <p><a href="${env.BUILD_URL}">Voir les détails du build</a></p>
+                    <hr>
+                    <p>Application déployée avec succès sur http://localhost:5173</p>
+                '''
             )
         }
         failure {
             emailext (
                 to: 'mairosow91@gmail.com',
-                subject: "Build echoue: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: """
-                    Erreur dans le pipeline.
-                    Projet: ${env.JOB_NAME}
-                    Build: ${env.BUILD_NUMBER}
-                    Status: ECHEC
-                    Logs: ${env.BUILD_URL}
-                """
+                subject: "ÉCHEC: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                mimeType: 'text/html',
+                body: '''
+                    <h2>Pipeline Jenkins Échoué</h2>
+                    <p><b>Job:</b> ${env.JOB_NAME}</p>
+                    <p><b>Build:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Statut:</b> <span style="color:red">ÉCHEC</span></p>
+                    <p><a href="${env.BUILD_URL}">Voir les logs d\'erreur</a></p>
+                '''
             )
         }
-        always {
-            sh 'docker system prune -f || true'
-        }
     }
-}
