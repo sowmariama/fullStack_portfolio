@@ -9,35 +9,21 @@ pipeline {
     }
     
     stages {
-        
         stage('Clone') {
             steps {
-                git url: 'https://github.com/sowmariama/fullStack_portfolio.git', 
-                    branch: 'main'
+                git url: 'https://github.com/sowmariama/fullStack_portfolio.git', branch: 'main'
             }
         }
         
         stage('Build Backend') {
             steps {
-                sh '''
-                    docker build \
-                        --memory="1g" \
-                        --memory-swap="2g" \
-                        -t ${BACKEND_IMAGE}:${VERSION} \
-                        ./portfolio/04-express-mongodb
-                '''
+                sh 'docker build --memory="1g" --memory-swap="2g" -t ${BACKEND_IMAGE}:${VERSION} ./portfolio/04-express-mongodb'
             }
         }
         
         stage('Build Frontend') {
             steps {
-                sh '''
-                    docker build \
-                        --memory="1g" \
-                        --memory-swap="2g" \
-                        -t ${FRONTEND_IMAGE}:${VERSION} \
-                        ./portfolio/03-react
-                '''
+                sh 'docker build --memory="1g" --memory-swap="2g" -t ${FRONTEND_IMAGE}:${VERSION} ./portfolio/03-react'
             }
         }
         
@@ -52,30 +38,45 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh ''' 
-        # Aller dans le dossier contenant docker-compose.yml
-            
-                  cd ./portfolio
-        # Arrêter les anciens conteneurs si ils existent
-                   docker-compose down || true
-                    
-                   # Lancer les nouveaux conteneurs
-                   docker-compose up -d
+                sh '''
+                    cd ./portfolio
+                    docker-compose down || true
+                    docker-compose up -d
                 '''
             }
         }
-        
     }
     
     post {
         success {
-            echo 'Pipeline exécuté avec succès !'
-            echo 'Images pushées sur Docker Hub !'
-            echo 'Application déployée !'
+            emailext (
+                to: 'sowmariame932@gmail.com',
+                subject: "Build reussi: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: """
+                    Pipeline execute avec succes.
+                    Projet: ${env.JOB_NAME}
+                    Build: ${env.BUILD_NUMBER}
+                    Status: SUCCES
+                    Details: ${env.BUILD_URL}
+                    Images Docker Hub:
+                    - sowmariama/portfolio-backend:v1
+                    - sowmariama/portfolio-frontend:v1
+                    Application accessible sur http://localhost:5173
+                """
+            )
         }
         failure {
-            echo 'Erreur dans le pipeline.'
-            sh 'docker logout || true'
+            emailext (
+                to: 'sowmariame932@gmail.com',
+                subject: "Build echoue: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: """
+                    Erreur dans le pipeline.
+                    Projet: ${env.JOB_NAME}
+                    Build: ${env.BUILD_NUMBER}
+                    Status: ECHEC
+                    Logs: ${env.BUILD_URL}
+                """
+            )
         }
         always {
             sh 'docker system prune -f || true'
