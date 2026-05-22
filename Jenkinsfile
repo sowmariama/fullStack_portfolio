@@ -20,7 +20,27 @@ pipeline {
                 sh 'docker build --memory="1g" --memory-swap="2g" -t ${BACKEND_IMAGE}:${VERSION} ./portfolio/04-express-mongodb'
             }
         }
+
         
+    stage('SonarQube Analysis') {
+    steps {
+        sh '''
+            docker run --rm \
+              --network=host \
+              -v $(pwd):/usr/src \
+              sonarsource/sonar-scanner-cli \
+              -Dsonar.projectKey=portfolio-fullstack \
+              -Dsonar.projectName="Portfolio Full Stack" \
+              -Dsonar.sources=/usr/src \
+              -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**,**/.git/**" \
+              -Dsonar.host.url=http://localhost:9000 \
+              -Dsonar.login=admin \
+              -Dsonar.password=20M@ri@m22
+        '''
+    }
+}
+	
+
         stage('Build Frontend') {
             steps {
                 sh 'docker build --memory="1g" --memory-swap="2g" -t ${FRONTEND_IMAGE}:${VERSION} ./portfolio/03-react'
@@ -80,3 +100,5 @@ pipeline {
         }
     }
 }
+
+
