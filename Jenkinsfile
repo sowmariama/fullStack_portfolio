@@ -58,10 +58,11 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh '''
-                    cd ./portfolio
-                    docker-compose down || true
-                    docker-compose up -d
+               echo '🚀 Déploiement avec Docker       		Compose...'
+		cd ./portfolio/fullStack_portfolio || true
+                docker compose down --remove-orphans || true
+                docker compose up -d
+                docker compose ps
                 '''
             }
         }
