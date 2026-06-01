@@ -58,12 +58,13 @@ pipeline {
         
         stage('Deploy') {
             steps {
-               echo '🚀 Déploiement avec Docker       		Compose...'
-		cd ./portfolio/fullStack_portfolio || true
-                docker compose down --remove-orphans || true
-                docker compose up -d
-                docker compose ps
-                '''
+               echo 'Déploiement avec Docker       		Compose...'
+               sh '''
+		 cd ./portfolio/fullStack_portfolio || true
+                 docker compose down --remove-orphans || true
+                 docker compose up -d
+                 docker compose ps
+               '''
             }
         }
     }
