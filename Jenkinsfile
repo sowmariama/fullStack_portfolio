@@ -116,9 +116,9 @@ pipeline {
             steps {
                 echo 'Deploiement avec Docker Compose...'
                 sh '''
-                    docker compose -f ./docker-compose.yml down --remove-orphans || true
-                    docker compose -f ./docker-compose.yml up -d
-                    docker compose -f ./docker-compose.yml ps
+                    docker-compose -f ./docker-compose.yml down --remove-orphans || true
+                    docker-compose -f ./docker-compose.yml up -d
+                    docker-compose -f ./docker-compose.yml ps
                 '''
             }
         }
