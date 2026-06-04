@@ -33,25 +33,41 @@ pipeline {
         // ETAPE 2 — Analyser la qualite du code avec SonarQube
         // On analyse AVANT de builder
         // Si le code est de mauvaise qualite on peut s'arreter
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Analyse de la qualite du code avec SonarQube...'
-                sh '''
-                    docker run --rm \
-                      --network=host \
-                      -v $(pwd):/usr/src \
-                      sonarsource/sonar-scanner-cli \
-                      -Dsonar.projectKey=portfolio-fullstack \
-                      -Dsonar.projectName="Portfolio Full Stack - Mairam Baidy Sow" \
-                      -Dsonar.sources=/usr/src \
-                      -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**,**/.git/**" \
-                      -Dsonar.host.url=http://localhost:9000 \
-                      -Dsonar.login=admin \
-                      -Dsonar.password=20M@ri@m22
-                '''
-            }
-        }
+        stage('SonarQube Backend') {
+     	   steps {
+              sh '''
+                docker run --rm \
+                --network=host \
+                -v $(pwd)/portfolio/04-express-mongodb:/usr/src \
+                sonarsource/sonar-scanner-cli \
+                -Dsonar.projectKey=portfolio-backend \
+                -Dsonar.projectName="Portfolio Backend" \
+                -Dsonar.sources=. \
+                -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
+                -Dsonar.host.url=http://localhost:9000 \
+                -Dsonar.login=admin \
+                -Dsonar.password=20M@ri@m22
+         '''
+    }
+}
 
+stage('SonarQube Frontend') {
+    steps {
+        sh '''
+            docker run --rm \
+              --network=host \
+              -v $(pwd)/portfolio/03-react:/usr/src \
+              sonarsource/sonar-scanner-cli \
+              -Dsonar.projectKey=portfolio-frontend \
+              -Dsonar.projectName="Portfolio Frontend" \
+              -Dsonar.sources=. \
+              -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
+              -Dsonar.host.url=http://localhost:9000 \
+              -Dsonar.login=admin \
+              -Dsonar.password=20M@ri@m22
+        '''
+    }
+}
         // ETAPE 3 — Construire l'image Docker du Backend
         // --memory="1g" limite la RAM car Ubuntu VirtualBox a 4GB
         // --memory-swap="2g" utilise le swap si besoin
