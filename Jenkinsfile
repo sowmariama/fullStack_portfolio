@@ -20,8 +20,6 @@ pipeline {
     stages {
 
         // ETAPE 1 — Cloner le code depuis GitHub
-        // Jenkins telecharge tout le code dans son workspace
-        // /var/jenkins_home/workspace/portfolio-fullstack-pipeline/
         stage('Clone') {
             steps {
                 echo 'Clonage du depot GitHub...'
@@ -30,48 +28,47 @@ pipeline {
             }
         }
 
-        // ETAPE 2 — Analyser la qualite du code avec SonarQube
-        // On analyse AVANT de builder
-        // Si le code est de mauvaise qualite on peut s'arreter
+        // ETAPE 2 — Analyser la qualite du code avec SonarQube (Backend)
         stage('SonarQube Backend') {
-     	   steps {
-              sh '''
-                docker run --rm \
-                --network=host \
-                -v $(pwd)/portfolio/04-express-mongodb:/usr/src \
-                sonarsource/sonar-scanner-cli \
-                -Dsonar.projectKey=portfolio-backend \
-                -Dsonar.projectName="Portfolio Backend" \
-                -Dsonar.sources=. \
-                -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
-                -Dsonar.host.url=http://localhost:9000 \
-                -Dsonar.login=admin \
-                -Dsonar.password=20M@ri@m22
-         '''
-    }
-}
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        docker run --rm \
+                          --network=host \
+                          -v $(pwd)/portfolio/04-express-mongodb:/usr/src \
+                          sonarsource/sonar-scanner-cli \
+                          -Dsonar.projectKey=portfolio-backend \
+                          -Dsonar.projectName="Portfolio Backend" \
+                          -Dsonar.sources=. \
+                          -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
+                          -Dsonar.host.url=http://localhost:9000 \
+                          -Dsonar.login=$SONAR_TOKEN
+                    '''
+                }
+            }
+        }
 
-stage('SonarQube Frontend') {
-    steps {
-        sh '''
-            docker run --rm \
-              --network=host \
-              -v $(pwd)/portfolio/03-react:/usr/src \
-              sonarsource/sonar-scanner-cli \
-              -Dsonar.projectKey=portfolio-frontend \
-              -Dsonar.projectName="Portfolio Frontend" \
-              -Dsonar.sources=. \
-              -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
-              -Dsonar.host.url=http://localhost:9000 \
-              -Dsonar.login=admin \
-              -Dsonar.password=20M@ri@m22
-        '''
-    }
-}
-        // ETAPE 3 — Construire l'image Docker du Backend
-        // --memory="1g" limite la RAM car Ubuntu VirtualBox a 4GB
-        // --memory-swap="2g" utilise le swap si besoin
-        // -t = tagger l'image avec nom et version
+        // ETAPE 3 — Analyser la qualite du code avec SonarQube (Frontend)
+        stage('SonarQube Frontend') {
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        docker run --rm \
+                          --network=host \
+                          -v $(pwd)/portfolio/03-react:/usr/src \
+                          sonarsource/sonar-scanner-cli \
+                          -Dsonar.projectKey=portfolio-frontend \
+                          -Dsonar.projectName="Portfolio Frontend" \
+                          -Dsonar.sources=. \
+                          -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
+                          -Dsonar.host.url=http://localhost:9000 \
+                          -Dsonar.login=$SONAR_TOKEN
+                    '''
+                }
+            }
+        }
+
+        // ETAPE 4 — Construire l'image Docker du Backend
         stage('Build Backend') {
             steps {
                 echo 'Construction image Docker Backend...'
@@ -85,11 +82,7 @@ stage('SonarQube Frontend') {
             }
         }
 
-        // ETAPE 4 — Construire l'image Docker du Frontend
-        // Utilise un multi-stage build
-        // Stage 1 : node:20-alpine compile React
-        // Stage 2 : nginx:alpine sert les fichiers
-        // Image finale = 25MB au lieu de 900MB
+        // ETAPE 5 — Construire l'image Docker du Frontend
         stage('Build Frontend') {
             steps {
                 echo 'Construction image Docker Frontend...'
@@ -103,10 +96,7 @@ stage('SonarQube Frontend') {
             }
         }
 
-        // ETAPE 5 — Pusher les images sur Docker Hub
-        // --password-stdin = plus securise que -p password
-        // Le mot de passe ne s'affiche pas dans les logs
-        // retry(3) = reessayer 3 fois si probleme reseau
+        // ETAPE 6 — Pusher les images sur Docker Hub
         stage('Push to Docker Hub') {
             steps {
                 echo 'Push des images vers Docker Hub...'
@@ -123,11 +113,7 @@ stage('SonarQube Frontend') {
             }
         }
 
-        // ETAPE 6 — Deployer l'application
-        // docker compose down = arreter les anciens conteneurs
-        // || true = ne pas echouer si aucun conteneur ne tourne
-        // docker compose up -d = lancer les nouveaux en arriere-plan
-        // docker compose ps = afficher l'etat des services
+        // ETAPE 7 — Deployer l'application
         stage('Deploy') {
             steps {
                 echo 'Deploiement avec Docker Compose...'
@@ -141,10 +127,7 @@ stage('SonarQube Frontend') {
     }
 
     // POST = actions apres le pipeline
-    // S'executent toujours apres les stages
     post {
-
-        // Si tout s'est bien passe
         success {
             echo 'Pipeline execute avec succes !'
             mail(
@@ -153,8 +136,6 @@ stage('SonarQube Frontend') {
                 body: "Pipeline execute avec succes. Details: ${env.BUILD_URL}"
             )
         }
-
-        // Si quelque chose a echoue
         failure {
             echo 'Pipeline echoue.'
             mail(
@@ -163,10 +144,6 @@ stage('SonarQube Frontend') {
                 body: "Erreur dans le pipeline. Logs: ${env.BUILD_URL}"
             )
         }
-
-        // Toujours execute — succes ou echec
-        // Nettoyer les images Docker inutiles
-        // Pour liberer l'espace disque apres chaque build
         always {
             sh 'docker system prune -f || true'
         }
