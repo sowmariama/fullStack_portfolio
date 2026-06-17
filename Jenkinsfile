@@ -1,25 +1,14 @@
 pipeline {
-    // agent any = Jenkins peut utiliser n'importe quel agent disponible
     agent any
 
     environment {
-        // Recuperer les credentials Docker Hub de facon securisee
-        // DOCKER_HUB_CREDS_USR = username
-        // DOCKER_HUB_CREDS_PSW = password (masque dans les logs)
         DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
-
-        // Variables pour eviter de repeter les noms d'images
         BACKEND_IMAGE = 'sowmariama/portfolio-backend'
         FRONTEND_IMAGE = 'sowmariama/portfolio-frontend'
-
-        // VERSION fixe a v1 pour eviter des problemes de tag
-        // avec BUILD_NUMBER les tags changent a chaque build
         VERSION = 'v1'
     }
 
     stages {
-
-        // ETAPE 1 — Cloner le code depuis GitHub
         stage('Clone') {
             steps {
                 echo 'Clonage du depot GitHub...'
@@ -28,7 +17,6 @@ pipeline {
             }
         }
 
-        // ETAPE 2 — Analyser la qualite du code avec SonarQube (Backend)
         stage('SonarQube Backend') {
             steps {
                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
@@ -48,7 +36,6 @@ pipeline {
             }
         }
 
-        // ETAPE 3 — Analyser la qualite du code avec SonarQube (Frontend)
         stage('SonarQube Frontend') {
             steps {
                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
@@ -68,7 +55,14 @@ pipeline {
             }
         }
 
-        // ETAPE 4 — Construire l'image Docker du Backend
+        stage('Wait for Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 echo 'Construction image Docker Backend...'
@@ -82,7 +76,6 @@ pipeline {
             }
         }
 
-        // ETAPE 5 — Construire l'image Docker du Frontend
         stage('Build Frontend') {
             steps {
                 echo 'Construction image Docker Frontend...'
@@ -96,11 +89,9 @@ pipeline {
             }
         }
 
-        // ETAPE 6 — Pusher les images sur Docker Hub
         stage('Push to Docker Hub') {
             steps {
-                echo 'Push des images vers Docker Hub...'
-                retry(3) {
+                echo 'Push des images vers Docker Hub...' retry(3) {
                     sh '''
                         echo $DOCKER_HUB_CREDS_PSW | \
                         docker login -u $DOCKER_HUB_CREDS_USR \
@@ -113,7 +104,6 @@ pipeline {
             }
         }
 
-        // ETAPE 7 — Deployer l'application
         stage('Deploy') {
             steps {
                 echo 'Deploiement avec Docker Compose...'
@@ -126,7 +116,6 @@ pipeline {
         }
     }
 
-    // POST = actions apres le pipeline
     post {
         success {
             echo 'Pipeline execute avec succes !'
