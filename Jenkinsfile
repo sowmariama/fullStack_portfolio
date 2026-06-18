@@ -38,6 +38,14 @@ pipeline {
             }
         }
 
+        stage('Wait for Quality Gate Backend') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('SonarQube Frontend') {
             steps {
                 withSonarQubeEnv('SonarQube') {
@@ -59,16 +67,13 @@ pipeline {
             }
         }
 
-        // À décommenter après installation du plugin et configuration du webhook
-        /*
-        stage('Wait for Quality Gate Backend') {
+        stage('Wait for Quality Gate Frontend') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
-        */
 
         stage('Build Backend') {
             steps {
