@@ -19,42 +19,48 @@ pipeline {
 
         stage('SonarQube Backend') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                        docker run --rm \
-                          --network=host \
-                          -v $(pwd)/portfolio/04-express-mongodb:/usr/src \
-                          sonarsource/sonar-scanner-cli \
-                          -Dsonar.projectKey=portfolio-backend \
-                          -Dsonar.projectName="Portfolio Backend" \
-                          -Dsonar.sources=. \
-                          -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
-                          -Dsonar.host.url=http://localhost:9000 \
-                          -Dsonar.login=$SONAR_TOKEN
-                    '''
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            docker run --rm \
+                              --network=host \
+                              -v $(pwd)/portfolio/04-express-mongodb:/usr/src \
+                              sonarsource/sonar-scanner-cli \
+                              -Dsonar.projectKey=portfolio-backend \
+                              -Dsonar.projectName="Portfolio Backend" \
+                              -Dsonar.sources=. \
+                              -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
                 }
             }
         }
 
         stage('SonarQube Frontend') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                        docker run --rm \
-                          --network=host \
-                          -v $(pwd)/portfolio/03-react:/usr/src \
-                          sonarsource/sonar-scanner-cli \
-                          -Dsonar.projectKey=portfolio-frontend \
-                          -Dsonar.projectName="Portfolio Frontend" \
-                          -Dsonar.sources=. \
-                          -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
-                          -Dsonar.host.url=http://localhost:9000 \
-                          -Dsonar.login=$SONAR_TOKEN
-                    '''
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            docker run --rm \
+                              --network=host \
+                              -v $(pwd)/portfolio/03-react:/usr/src \
+                              sonarsource/sonar-scanner-cli \
+                              -Dsonar.projectKey=portfolio-frontend \
+                              -Dsonar.projectName="Portfolio Frontend" \
+                              -Dsonar.sources=. \
+                              -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
                 }
             }
         }
 
+        // À décommenter après installation du plugin et configuration du webhook
+        /*
         stage('Wait for Quality Gate Backend') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
@@ -62,14 +68,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Wait for Quality Gate Frontend') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-       }
+        */
 
         stage('Build Backend') {
             steps {
