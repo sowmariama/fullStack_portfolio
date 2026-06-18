@@ -55,13 +55,21 @@ pipeline {
             }
         }
 
-        stage('Wait for Quality Gate') {
+        stage('Wait for Quality Gate Backend') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
+
+        stage('Wait for Quality Gate Frontend') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+       }
 
         stage('Build Backend') {
             steps {
@@ -91,11 +99,10 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                echo 'Push des images vers Docker Hub...' retry(3) {
+                echo 'Push des images vers Docker Hub...'
+                retry(3) {
                     sh '''
-                        echo $DOCKER_HUB_CREDS_PSW | \
-                        docker login -u $DOCKER_HUB_CREDS_USR \
-                        --password-stdin
+                        echo $DOCKER_HUB_CREDS_PSW | docker login -u $DOCKER_HUB_CREDS_USR --password-stdin
                         docker push ${BACKEND_IMAGE}:${VERSION}
                         docker push ${FRONTEND_IMAGE}:${VERSION}
                         docker logout
