@@ -204,11 +204,78 @@ minikube start --driver=docker
 | Fichier | Rôle |
 |---|---|
 | `namespace.yaml` | Namespace `portfolio` pour isoler les ressources |
-| `secret.yaml` | Secret Kubernetes pour MONGO_URI (chiffré en base64) |
+| `secret.yaml` | Template secret (ne pas committer avec vraie URI) |
 | `backend-deployment.yaml` | Déploiement du backend (1 replica, probes, limites) |
 | `backend-service.yaml` | Service ClusterIP — expose le backend en interne |
 | `frontend-deployment.yaml` | Déploiement du frontend (1 replica, probes, limites) |
 | `frontend-service.yaml` | Service NodePort 30080 — expose le frontend à l'extérieur |
+| `coredns-patch.yaml` | Patch CoreDNS avec Google DNS (8.8.8.8) |
+| `deploy-all.sh` | Script de déploiement complet automatisé |
+
+### Problème rencontré et résolu — DNS Minikube
+
+**Symptôme :** Backend en `CrashLoopBackOff` avec l'erreur :
+```
+Could not connect to any servers in your MongoDB Atlas cluster.
+One common reason is that you're trying to access the database
+from an IP that isn't whitelisted.
+```
+
+**Vraie cause :** Le DNS interne de Minikube ne résolvait pas les noms externes (`cluster0.yehwmm0.mongodb.net`). Les pods ne pouvaient pas joindre MongoDB Atlas.
+
+**Preuve :**
+```bash
+kubectl run dns-test --image=busybox -- sh -c "nslookup cluster0.yehwmm0.mongodb.net"
+# → wget: bad address 'ifconfig.me'  (aucune résolution DNS externe)
+```
+
+**Solution :** Patch CoreDNS pour utiliser Google DNS (8.8.8.8) comme forwarder :
+```bash
+kubectl patch configmap coredns -n kube-system --patch '
+data:
+  Corefile: |
+    .:53 {
+        forward . 8.8.8.8 8.8.4.4
+        ...
+    }
+'
+kubectl rollout restart deployment/coredns -n kube-system
+```
+
+**Résultat après correction :**
+```
+Connecté à MongoDB ✅
+```
+
+### Secret MONGO_URI — bonne pratique
+
+Le fichier `k8s/secret.yaml` est dans `.gitignore`. Pour créer le secret :
+```bash
+kubectl create secret generic portfolio-secret -n portfolio \
+  --from-literal=MONGO_URI="mongodb+srv://user:pass@cluster0.xxx.mongodb.net/portfolio?appName=Cluster0"
+```
+
+### État final du cluster
+
+```
+NAME                            READY   STATUS    RESTARTS
+pod/backend-xxx                 1/1     Running   ✅
+pod/frontend-xxx                1/1     Running   ✅
+
+NAME               TYPE        CLUSTER-IP       PORT(S)
+service/backend    ClusterIP   10.104.15.100    5000/TCP
+service/frontend   NodePort    10.96.161.248    80:30080/TCP
+
+NAME                       READY   UP-TO-DATE   AVAILABLE
+deployment.apps/backend    1/1     1            1         ✅
+deployment.apps/frontend   1/1     1            1         ✅
+```
+
+### Accès au frontend
+```bash
+minikube service frontend -n portfolio --url
+# → http://127.0.0.1:38145  (port dynamique, laisser le terminal ouvert)
+```
 
 ### Architecture Kubernetes
 
