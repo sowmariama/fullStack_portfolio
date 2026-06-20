@@ -17,7 +17,8 @@ function ListeProjets() {
       const response = await getProjets();
       setProjets(response.data);
     } catch (error) {
-      console.error("Erreur chargement projets :", error);
+      // Erreur silencieuse en production — l'utilisateur voit l'état vide
+      if (import.meta.env.DEV) console.error("Erreur chargement projets :", error);
     } finally {
       setLoading(false);
     }
@@ -29,7 +30,7 @@ function ListeProjets() {
       await supprimerProjet(id);
       setProjets(projets.filter(p => p._id !== id));
     } catch (error) {
-      console.error("Erreur suppression :", error);
+      if (import.meta.env.DEV) console.error("Erreur suppression :", error);
     }
   };
 
@@ -85,7 +86,7 @@ function ListeProjets() {
                     src={projet.image}
                     alt={projet.titre}
                     onError={(e) => e.target.src = 'https://placehold.co/600x400/1e40af/white?text=Image+non+disponible'}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <Link
                     to={`/projet/${projet._id}`}

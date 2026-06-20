@@ -11,6 +11,7 @@ function DetailProjet() {
 
   useEffect(() => {
     chargerProjet();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const chargerProjet = async () => {
@@ -18,7 +19,7 @@ function DetailProjet() {
       const response = await getProjet(id);
       setProjet(response.data);
     } catch (error) {
-      console.error("Erreur chargement projet :", error);
+      if (import.meta.env.DEV) console.error("Erreur chargement projet :", error);
     } finally {
       setLoading(false);
     }
@@ -30,7 +31,7 @@ function DetailProjet() {
       await supprimerProjet(id);
       navigate('/');
     } catch (error) {
-      console.error("Erreur suppression :", error);
+      if (import.meta.env.DEV) console.error("Erreur suppression :", error);
     }
   };
 

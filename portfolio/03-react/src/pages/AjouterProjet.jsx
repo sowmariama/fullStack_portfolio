@@ -61,8 +61,8 @@ function AjouterProjet() {
       await ajouterProjet(nouveauProjet);
       navigate('/');
     } catch (error) {
-      console.error("Erreur ajout projet :", error);
-      alert("Vérifiez que json-server tourne sur le port 3000 !");
+      if (import.meta.env.DEV) console.error("Erreur ajout projet :", error);
+      alert("Impossible d'ajouter le projet. Vérifiez que le backend est accessible.");
     } finally {
       setLoading(false);
     }
