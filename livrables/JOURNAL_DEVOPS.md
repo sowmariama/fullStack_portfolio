@@ -136,22 +136,41 @@ docker run -d \
 
 ---
 
-## MODULE 3 — SonarQube 🔄 (en cours)
+## MODULE 3 — SonarQube ✅
 
 ### État actuel
-- SonarQube pas encore démarré (container absent au moment de la vérification)
-- Intégration déjà présente dans le Jenkinsfile (stages SonarQube Backend/Frontend)
-- Credentials `sonarqube-token` à créer dans Jenkins
+- SonarQube `community` tourne sur le port 9000
+- 2 projets analysés et **passés** : `portfolio-backend` et `portfolio-frontend`
+- Connexion Jenkins ↔ SonarQube déjà configurée (credential `sonarqube-token`)
 
-### Prochaines étapes
-```bash
-docker run -d \
-  --name sonarqube \
-  --network host \
-  -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true \
-  sonarqube:lts-community
-# Accès : http://localhost:9000
-# Login par défaut : admin / admin
+### Problème identifié et corrigé
+Les builds Jenkins #5 et #7 échouaient sur le `waitForQualityGate` malgré un Quality Gate "Passé" dans SonarQube. Cause : message "branche principale vide" dans SonarQube Community Edition.
+
+**Corrections apportées au Jenkinsfile :**
+- `-Dsonar.login` remplacé par `-Dsonar.token` (paramètre déprécié dans les nouvelles versions)
+- Ajout `-Dsonar.scm.disabled=true` — désactive la détection de branche SCM (non supportée en Community)
+- Ajout `-Dsonar.qualitygate.wait=true` — le scanner attend lui-même le résultat du Quality Gate
+- Suppression des stages `Wait for Quality Gate` séparés (devenus redondants)
+
+### Architecture SonarQube dans le pipeline
+
+```
+Jenkins stage SonarQube Backend
+    └── docker run sonarsource/sonar-scanner-cli
+            ├── Analyse le code Node.js (portfolio/04-express-mongodb)
+            ├── Envoie les résultats à SonarQube (localhost:9000)
+            ├── Attend le Quality Gate (sonar.qualitygate.wait=true)
+            └── Si KO → pipeline bloqué / Si OK → étape suivante
+
+Jenkins stage SonarQube Frontend
+    └── docker run sonarsource/sonar-scanner-cli
+            ├── Analyse le code React (portfolio/03-react)
+            └── Même logique Quality Gate
+```
+
+### Commit correspondant
+```
+fix(jenkins): correction Quality Gate SonarQube Community Edition
 ```
 
 ---
@@ -195,8 +214,12 @@ refactor(frontend): amélioration qualité code et Hero section
 portfolio-frontend   Up   0.0.0.0:5173->80/tcp
 portfolio-backend    Up   0.0.0.0:5000->5000/tcp
 jenkins              Up   0.0.0.0:8080->8080/tcp
-sonarqube            ❌ non démarré
+sonarqube            Up   0.0.0.0:9000->9000/tcp  ✅
 ```
+
+**SonarQube projets :**
+- `portfolio-backend` (Interface d'administration) → Quality Gate : Passé ✅
+- `portfolio-frontend` (Interface utilisateur) → Quality Gate : Passé ✅
 
 ---
 

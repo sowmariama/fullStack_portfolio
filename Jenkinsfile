@@ -31,17 +31,11 @@ pipeline {
                               -Dsonar.sources=. \
                               -Dsonar.exclusions="**/node_modules/**,**/dist/**" \
                               -Dsonar.host.url=http://localhost:9000 \
-                              -Dsonar.login=$SONAR_TOKEN
+                              -Dsonar.token=$SONAR_TOKEN \
+                              -Dsonar.scm.disabled=true \
+                              -Dsonar.qualitygate.wait=true
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Wait for Quality Gate Backend') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -60,17 +54,11 @@ pipeline {
                               -Dsonar.sources=. \
                               -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**" \
                               -Dsonar.host.url=http://localhost:9000 \
-                              -Dsonar.login=$SONAR_TOKEN
+                              -Dsonar.token=$SONAR_TOKEN \
+                              -Dsonar.scm.disabled=true \
+                              -Dsonar.qualitygate.wait=true
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Wait for Quality Gate Frontend') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
