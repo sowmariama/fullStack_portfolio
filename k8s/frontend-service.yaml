@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: portfolio
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  # NodePort : expose le frontend sur un port fixe du noeud Minikube
+  # Accessible via : minikube service frontend -n portfolio
+  type: NodePort

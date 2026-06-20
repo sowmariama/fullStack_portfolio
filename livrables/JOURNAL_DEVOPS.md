@@ -175,14 +175,72 @@ fix(jenkins): correction Quality Gate SonarQube Community Edition
 
 ---
 
-## MODULE 4 — Kubernetes 🔜
+## MODULE 4 — Kubernetes 🔄 (en cours)
 
-### Prochaines étapes planifiées
-- Installation Minikube sur WSL2 (driver Docker)
-- Création des manifests YAML (Deployment + Service backend et frontend)
-- ConfigMap pour les variables d'environnement
-- Secret pour MONGO_URI
-- Intégration dans le pipeline Jenkins (remplacer `docker-compose` par `kubectl apply`)
+### Installation
+
+```bash
+# Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Démarrage cluster (driver Docker)
+minikube start --driver=docker
+```
+
+### Versions installées
+- Minikube : v1.38.1
+- kubectl : v1.36.2
+- Kubernetes : v1.35.1
+- Node : minikube (Ready, control-plane)
+- Ressources allouées : 2 CPUs, 3900MB RAM
+
+### Manifests créés (dossier k8s/)
+
+| Fichier | Rôle |
+|---|---|
+| `namespace.yaml` | Namespace `portfolio` pour isoler les ressources |
+| `secret.yaml` | Secret Kubernetes pour MONGO_URI (chiffré en base64) |
+| `backend-deployment.yaml` | Déploiement du backend (1 replica, probes, limites) |
+| `backend-service.yaml` | Service ClusterIP — expose le backend en interne |
+| `frontend-deployment.yaml` | Déploiement du frontend (1 replica, probes, limites) |
+| `frontend-service.yaml` | Service NodePort 30080 — expose le frontend à l'extérieur |
+
+### Architecture Kubernetes
+
+```
+                    ┌─────────────────────────────────┐
+                    │     Namespace: portfolio         │
+                    │                                  │
+  NodePort:30080    │  ┌──────────┐    ┌───────────┐  │
+  ──────────────────┼─▶│ frontend │───▶│  backend  │  │
+                    │  │  Service │    │  Service  │  │
+                    │  │(NodePort)│    │(ClusterIP)│  │
+                    │  └────┬─────┘    └─────┬─────┘  │
+                    │       │                │         │
+                    │  ┌────▼─────┐    ┌─────▼─────┐  │
+                    │  │ frontend │    │  backend  │  │
+                    │  │   Pod    │    │    Pod    │  │
+                    │  └──────────┘    └─────┬─────┘  │
+                    │                        │         │
+                    └────────────────────────┼─────────┘
+                                             │
+                                    MongoDB Atlas (cloud)
+```
+
+### Concepts utilisés
+- **Namespace** : isolation des ressources du projet
+- **Secret** : stockage sécurisé de MONGO_URI
+- **Deployment** : gestion des pods avec rolling update
+- **Service ClusterIP** : communication interne (backend)
+- **Service NodePort** : exposition externe (frontend)
+- **readinessProbe** : vérifie que le pod est prêt avant de router du trafic
+- **livenessProbe** : redémarre le pod s'il ne répond plus
+- **resources.limits** : plafond CPU/mémoire par conteneur
 
 ---
 

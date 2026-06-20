@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: portfolio
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  # ClusterIP : accessible uniquement depuis l'intérieur du cluster
+  # Le frontend appellera http://backend:5000 grâce au DNS interne Kubernetes
+  type: ClusterIP
