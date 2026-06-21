@@ -105,11 +105,24 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploiement avec Docker Compose...'
+                echo 'Deploiement sur Kubernetes...'
                 sh '''
-                    docker-compose -f ./docker-compose.yml down --remove-orphans || true
-                    docker-compose -f ./docker-compose.yml up -d
-                    docker-compose -f ./docker-compose.yml ps
+                    # Mettre à jour les images dans les déploiements Kubernetes
+                    # kubectl set image déclenche un rolling update automatique
+                    kubectl set image deployment/backend \
+                        backend=${BACKEND_IMAGE}:${VERSION} \
+                        -n portfolio
+
+                    kubectl set image deployment/frontend \
+                        frontend=${FRONTEND_IMAGE}:${VERSION} \
+                        -n portfolio
+
+                    # Attendre que les déploiements soient terminés
+                    kubectl rollout status deployment/backend -n portfolio
+                    kubectl rollout status deployment/frontend -n portfolio
+
+                    # Afficher l'état final
+                    kubectl get pods -n portfolio
                 '''
             }
         }

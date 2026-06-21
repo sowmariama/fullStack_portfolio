@@ -271,11 +271,66 @@ deployment.apps/backend    1/1     1            1         ✅
 deployment.apps/frontend   1/1     1            1         ✅
 ```
 
-### Accès au frontend
+### Intégration Jenkins → Kubernetes
+
+**Problème :** Jenkins (conteneur Docker) ne pouvait pas joindre l'API Kubernetes de Minikube.
+
+**Diagnostic :**
+- Jenkins sur réseau Docker `bridge` (par défaut)
+- Minikube sur réseau Docker `minikube` (isolé)
+- Port forwarding WSL (`127.0.0.1:32776`) non accessible depuis un conteneur
+
+**Solution en 4 étapes :**
+
 ```bash
-minikube service frontend -n portfolio --url
-# → http://127.0.0.1:38145  (port dynamique, laisser le terminal ouvert)
+# 1. Installer kubectl dans Jenkins
+docker exec -it jenkins bash -c "
+  curl -LO 'https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl'
+  chmod +x kubectl && mv kubectl /usr/local/bin/
+"
+
+# 2. Connecter Jenkins au réseau Minikube
+docker network connect minikube jenkins
+
+# 3. Trouver le vrai port de l'API (8443, pas le port WSL 32776)
+docker exec minikube ss -tlnp | grep apiserver
+# → LISTEN *:8443
+
+# 4. Générer kubeconfig avec IP réelle de Minikube
+kubectl config view --minify --flatten | \
+  sed 's|https://127.0.0.1:32776|https://192.168.49.2:8443|g' \
+  > /tmp/kubeconfig-jenkins
+docker cp /tmp/kubeconfig-jenkins jenkins:/root/.kube/config
 ```
+
+**Vérification :**
+```bash
+docker exec jenkins kubectl get nodes
+# → minikube   Ready   control-plane ✅
+```
+
+**Jenkinsfile — stage Deploy mis à jour :**
+```groovy
+stage('Deploy') {
+    steps {
+        sh '''
+            kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${VERSION} -n portfolio
+            kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE}:${VERSION} -n portfolio
+            kubectl rollout status deployment/backend -n portfolio
+            kubectl rollout status deployment/frontend -n portfolio
+            kubectl get pods -n portfolio
+        '''
+    }
+}
+```
+
+### Accès permanent au frontend (sans socat)
+
+```bash
+# Port-forward stable sur port 9090
+kubectl port-forward service/frontend 9090:80 -n portfolio --address=0.0.0.0 &
+```
+Accès depuis Windows : `http://localhost:9090`
 
 ### Architecture Kubernetes
 
