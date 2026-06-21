@@ -175,7 +175,78 @@ fix(jenkins): correction Quality Gate SonarQube Community Edition
 
 ---
 
-## MODULE 4 — Kubernetes 🔄 (en cours)
+## MODULE 6 — Prometheus/Grafana ✅
+
+### Installation via Helm
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+kubectl create namespace monitoring
+helm install prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --set grafana.adminPassword=admin123 \
+  --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+  --set grafana.service.type=NodePort \
+  --set grafana.service.nodePort=32000
+```
+
+### Composants installés (namespace monitoring)
+
+| Pod | Rôle | Status |
+|---|---|---|
+| prometheus-stack-grafana | Interface visuelle | Running ✅ |
+| prometheus-prometheus-stack | Collecte métriques | Running ✅ |
+| alertmanager-prometheus-stack | Gestion alertes | Running ✅ |
+| kube-state-metrics | Métriques K8s | Running ✅ |
+| node-exporter | Métriques serveur | Running ✅ |
+| prometheus-operator | Gère Prometheus | Running ✅ |
+
+### Accès
+- Grafana : `kubectl port-forward service/prometheus-stack-grafana 3000:80 -n monitoring --address=0.0.0.0 &`
+- Prometheus : `kubectl port-forward service/prometheus-stack-kube-prom-prometheus 9092:9090 -n monitoring --address=0.0.0.0 &`
+
+### Dashboards importés
+- ID 315 : Kubernetes cluster monitoring
+- ID 1860 : Node Exporter Full
+- ID 6417 : Kubernetes pods
+
+### Fichiers créés
+- `monitoring/values.yaml` — configuration Helm versionnée
+- `monitoring/servicemonitor-backend.yaml` — surveillance du backend portfolio
+- `monitoring/README.md` — guide d'installation
+
+### Installation
+- Terraform v1.15.6 installé sur WSL2/Ubuntu 24.04
+- Provider Kubernetes v2.38.0 téléchargé via `terraform init`
+
+### Fichiers créés (dossier terraform/)
+
+| Fichier | Rôle |
+|---|---|
+| `main.tf` | 6 ressources Kubernetes décrites en HCL |
+| `variables.tf` | Variables paramétrables (namespace, images, replicas, mongo_uri) |
+| `outputs.tf` | Affiche namespace, services et commande d'accès après apply |
+| `terraform.tfvars.example` | Template sans secrets (committer) |
+| `terraform.tfvars` | Valeurs réelles (dans .gitignore) |
+
+### Workflow exécuté
+
+```bash
+terraform init    # Provider Kubernetes v2.38.0 téléchargé
+terraform plan    # Plan: 6 to add, 0 to change, 0 to destroy
+terraform apply   # Apply complete! Resources: 6 added
+```
+
+### Résultat
+- Namespace `portfolio-tf` créé ✅
+- Secret MONGO_URI créé (valeur masquée dans les logs) ✅
+- Backend Running dans `portfolio-tf` ✅
+- Frontend Running dans `portfolio-tf` ✅
+- Accessible sur `http://localhost:9091` ✅
+
+### Différence avec kubectl
+Terraform gère le **state** : il sait ce qu'il a créé et peut le modifier ou le supprimer proprement avec `terraform destroy`. kubectl lui ne garde aucune mémoire.
 
 ### Installation
 

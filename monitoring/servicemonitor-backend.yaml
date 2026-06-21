@@ -1,0 +1,34 @@
+# servicemonitor-backend.yaml
+# Un ServiceMonitor dit à Prometheus : "surveille ce service"
+# Prometheus va scraper (collecter) les métriques de notre backend
+# toutes les 15 secondes sur le chemin /metrics
+#
+# Pour que ce ServiceMonitor fonctionne, le backend doit exposer
+# des métriques sur /metrics (avec le module prom-client en Node.js)
+# C'est une étape future — ce fichier prépare la configuration
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: portfolio-backend
+  namespace: monitoring
+  labels:
+    # Ce label permet à Prometheus de découvrir ce ServiceMonitor
+    release: prometheus-stack
+spec:
+  # Surveille les services dans le namespace "portfolio"
+  namespaceSelector:
+    matchNames:
+      - portfolio
+
+  # Cible les services avec le label app=backend
+  selector:
+    matchLabels:
+      app: backend
+
+  endpoints:
+    - port: "5000"
+      # Chemin où le backend expose ses métriques
+      path: /metrics
+      # Collecte toutes les 15 secondes
+      interval: 15s
