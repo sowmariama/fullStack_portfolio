@@ -1,0 +1,10 @@
+# terraform.tfvars.example
+# Copie ce fichier en "terraform.tfvars" et remplis les valeurs
+# NE JAMAIS committer terraform.tfvars (il contient des secrets)
+
+namespace         = "portfolio-tf"
+backend_image     = "sowmariama/portfolio-backend:v1"
+frontend_image    = "sowmariama/portfolio-frontend:v1"
+backend_replicas  = 1
+frontend_replicas = 1
+mongo_uri         = "mongodb+srv://USER:PASSWORD@cluster0.xxx.mongodb.net/portfolio?appName=Cluster0"
